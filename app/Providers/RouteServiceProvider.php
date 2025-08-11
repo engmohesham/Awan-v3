@@ -12,24 +12,30 @@ class RouteServiceProvider extends ServiceProvider
 {
     public const HOME = '/admin';
 
-    protected $namespace = 'App\\Http\\Controllers';
+    public function register()
+    {
+        parent::register();
+    }
 
     public function boot(): void
     {
         $this->configureRateLimiting();
 
-        $this->routes(function () {
-            // API Routes
-            Route::prefix('api')
-                ->middleware(['api'])
-                ->namespace($this->namespace)
-                ->group(base_path('routes/api.php'));
+        $this->mapApiRoutes();
+        $this->mapWebRoutes();
+    }
 
-            // Web Routes
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
-        });
+    protected function mapApiRoutes()
+    {
+        Route::prefix('api')
+            ->middleware('api')
+            ->group(base_path('routes/api.php'));
+    }
+
+    protected function mapWebRoutes()
+    {
+        Route::middleware('web')
+            ->group(base_path('routes/web.php'));
     }
 
     protected function configureRateLimiting(): void
