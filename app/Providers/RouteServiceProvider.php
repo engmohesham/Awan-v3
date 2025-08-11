@@ -16,34 +16,23 @@ class RouteServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->configureRateLimiting();
-
-        $this->routes(function () {
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
-
-            Route::prefix('api')
-                ->middleware('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/api.php'));
-
-            // Add explicit route for admin login
-            Route::middleware('web')
-                ->get('/admin/login', function () {
-                    return view('filament.admin.login');
-                })->name('filament.admin.auth.login');
-        });
-    }
-
-    protected function configureRateLimiting(): void
-    {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
-        RateLimiter::for('web', function (Request $request) {
+        RateLimiter::for('filament', function (Request $request) {
             return Limit::perMinute(60)->by($request->ip());
+        });
+
+        $this->routes(function () {
+            // API Routes
+            Route::middleware(['api', 'cors'])
+                ->prefix('api')
+                ->group(base_path('routes/api.php'));
+
+            // Web Routes (including Filament)
+            Route::middleware('web')
+                ->group(base_path('routes/web.php'));
         });
     }
 }
