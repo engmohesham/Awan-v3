@@ -18,15 +18,16 @@ class AuthController extends Controller
                 'password' => 'required',
             ]);
 
-            if (!Auth::attempt($request->only('email', 'password'))) {
+            $credentials = $request->only('email', 'password');
+            
+            if (!$token = auth('api')->attempt($credentials)) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'بيانات الدخول غير صحيحة'
                 ], 401);
             }
 
-            $user = Auth::user();
-            $token = $user->createToken('auth-token')->plainTextToken;
+            $user = auth('api')->user();
 
             return response()->json([
                 'status' => 'success',
@@ -34,7 +35,8 @@ class AuthController extends Controller
                 'data' => [
                     'user' => $user,
                     'token' => $token,
-                    'token_type' => 'Bearer'
+                    'token_type' => 'Bearer',
+                    'expires_in' => auth('api')->factory()->getTTL() * 60
                 ]
             ]);
 
@@ -69,7 +71,7 @@ class AuthController extends Controller
                 'phone' => $request->phone
             ]);
 
-            $token = $user->createToken('auth-token')->plainTextToken;
+            $token = auth('api')->login($user);
 
             return response()->json([
                 'status' => 'success',
@@ -77,7 +79,8 @@ class AuthController extends Controller
                 'data' => [
                     'user' => $user,
                     'token' => $token,
-                    'token_type' => 'Bearer'
+                    'token_type' => 'Bearer',
+                    'expires_in' => auth('api')->factory()->getTTL() * 60
                 ]
             ], 201);
 
@@ -95,10 +98,10 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         try {
-            $request->user()->currentAccessToken()->delete();
+            auth('api')->logout();
 
             return response()->json([
                 'status' => 'success',
@@ -108,6 +111,26 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'حدث خطأ أثناء تسجيل الخروج'
+            ], 500);
+        }
+    }
+
+    public function refresh()
+    {
+        try {
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'user' => auth('api')->user(),
+                    'token' => auth('api')->refresh(),
+                    'token_type' => 'Bearer',
+                    'expires_in' => auth('api')->factory()->getTTL() * 60
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'حدث خطأ أثناء تحديث التوكن'
             ], 500);
         }
     }

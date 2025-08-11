@@ -16,7 +16,10 @@ Route::get('/test', function () {
 // Authentication Routes
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
-Route::middleware('auth:sanctum')->post('/auth/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:api')->group(function () {
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+});
 
 // Public Routes
 Route::get('/sections', [SectionController::class, 'index']);
