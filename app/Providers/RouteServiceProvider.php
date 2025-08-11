@@ -12,23 +12,28 @@ class RouteServiceProvider extends ServiceProvider
 {
     public const HOME = '/admin';
 
-    protected $namespace = 'App\\Http\\Controllers';
-
     public function boot(): void
+    {
+        $this->configureRateLimiting();
+
+        $this->routes(function () {
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(function () {
+                    require base_path('routes/api.php');
+                });
+
+            Route::middleware('web')
+                ->group(function () {
+                    require base_path('routes/web.php');
+                });
+        });
+    }
+
+    protected function configureRateLimiting(): void
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
-
-        $this->routes(function () {
-            Route::middleware(['api'])
-                ->prefix('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/api.php'));
-
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
         });
     }
 }

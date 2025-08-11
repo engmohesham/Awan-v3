@@ -6,12 +6,15 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\SectionController;
 
-// Authentication Routes
-Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+// Test route to verify API is working
+Route::get('/test', function () {
+    return response()->json(['message' => 'API is working!']);
 });
+
+// Authentication Routes
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::middleware('auth:sanctum')->post('/auth/logout', [AuthController::class, 'logout']);
 
 // Public Routes
 Route::get('/sections', [SectionController::class, 'index']);
