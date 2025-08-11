@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    public const HOME = '/admin';
-
-    protected $namespace = 'App\\Http\\Controllers';
+    public const HOME = '/';
 
     public function boot(): void
     {
@@ -20,17 +18,11 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
-        RateLimiter::for('filament', function (Request $request) {
-            return Limit::perMinute(60)->by($request->ip());
-        });
-
         $this->routes(function () {
-            // API Routes
-            Route::middleware(['api', 'cors'])
+            Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
-            // Web Routes (including Filament)
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });

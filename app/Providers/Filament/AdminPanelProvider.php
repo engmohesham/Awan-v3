@@ -27,9 +27,6 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->id('admin')
-            ->path('admin')
-            ->login()
             ->colors([
                 'primary' => Color::Emerald,
             ])
@@ -57,12 +54,11 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authGuard('web')
-            ->plugins([
-                FilamentShieldPlugin::make(),
-            ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
             ])
             ->databaseNotifications()
             ->sidebarCollapsibleOnDesktop()
