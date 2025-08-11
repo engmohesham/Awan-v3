@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SectionSeeder::class,
             CourseSeeder::class,
+            LessonSeeder::class,
+            TestUsersSeeder::class, // إضافة سيدر المستخدمين التجريبيين
         ]);
     }
 }
