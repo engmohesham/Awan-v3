@@ -36,7 +36,3 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/courses/{course}/lessons/{lesson}', [LessonController::class, 'show']);
     Route::get('/courses/{course}/lessons/{lesson}/attachments', [LessonController::class, 'attachments']);
 });
-
-Route::get('/debug-test', function () {
-    return 'debug works';
-});
