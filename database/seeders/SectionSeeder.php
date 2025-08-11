@@ -2,53 +2,54 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Section;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class SectionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        \DB::table('sections')->insert([
+        $sections = [
             [
                 'name' => 'البرمجة',
                 'description' => 'قسم خاص بدورات البرمجة وتطوير البرمجيات.',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'is_active' => true,
             ],
             [
                 'name' => 'التصميم',
                 'description' => 'قسم خاص بدورات التصميم الجرافيكي وتصميم الويب.',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'is_active' => true,
             ],
             [
                 'name' => 'التسويق',
                 'description' => 'قسم خاص بدورات التسويق الرقمي وإدارة الحملات.',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'is_active' => true,
             ],
             [
                 'name' => 'Programming',
                 'description' => 'Programming and software development courses.',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'is_active' => true,
             ],
             [
                 'name' => 'Design',
                 'description' => 'Graphic and web design courses.',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'is_active' => true,
             ],
             [
                 'name' => 'Marketing',
                 'description' => 'Digital marketing and campaign management courses.',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'is_active' => true,
             ],
-        ]);
+        ];
+
+        foreach ($sections as $section) {
+            Section::create([
+                'name' => $section['name'],
+                'slug' => Str::slug($section['name']),
+                'description' => $section['description'],
+                'is_active' => $section['is_active'],
+            ]);
+        }
     }
 }
