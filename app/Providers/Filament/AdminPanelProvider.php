@@ -20,6 +20,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\SalesChart;
+use Filament\Forms\Components\TextInput;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,6 +31,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->registration(false)
+            ->passwordReset(false)
+            ->emailVerification(false)
+            ->profile(false)
             ->colors([
                 'primary' => Color::Emerald,
             ])
@@ -57,11 +62,27 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->authGuard('web')
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->formComponents([
+                TextInput::make('email')
+                    ->label('البريد الإلكتروني')
+                    ->email()
+                    ->required(),
+                TextInput::make('password')
+                    ->label('كلمة المرور')
+                    ->password()
+                    ->required()
+                    ->revealable(false), // هذا سيمنع ظهور زر إظهار كلمة المرور
+            ])
+            ->databaseNotifications()
+            ->sidebarCollapsibleOnDesktop()
+            ->maxContentWidth('full')
+            ->rtl();
     }
 }
