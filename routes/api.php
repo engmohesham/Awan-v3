@@ -32,7 +32,7 @@ Route::get('/courses/{course}/lessons', [CourseController::class, 'lessons']);
 Route::get('/courses/{course}/free-lessons', [CourseController::class, 'freeLessons']);
 
 // Protected Routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::get('/courses/{course}/lessons/{lesson}', [LessonController::class, 'show']);
     Route::get('/courses/{course}/lessons/{lesson}/attachments', [LessonController::class, 'attachments']);
 });
