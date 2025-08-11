@@ -66,7 +66,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->databaseNotifications()
             ->sidebarCollapsibleOnDesktop()
-            ->maxContentWidth('full')
-            ->rtl();
+            ->maxContentWidth('full');
     }
 }
