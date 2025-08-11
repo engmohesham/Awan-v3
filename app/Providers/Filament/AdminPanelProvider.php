@@ -57,11 +57,16 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->authGuard('web')
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->databaseNotifications()
+            ->sidebarCollapsibleOnDesktop()
+            ->maxContentWidth('full')
+            ->rtl();
     }
 }
