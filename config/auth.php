@@ -2,7 +2,7 @@
 
 return [
     'defaults' => [
-        'guard' => 'web', // تغيير من 'api' إلى 'web'
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -12,7 +12,7 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'jwt',
+            'driver' => 'sanctum',
             'provider' => 'users',
         ],
     ],
