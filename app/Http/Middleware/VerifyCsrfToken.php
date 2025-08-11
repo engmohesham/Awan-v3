@@ -9,4 +9,9 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         '*'
     ];
+
+    protected function shouldPassThrough($request)
+    {
+        return $request->attributes->get('skip-csrf', false) || parent::shouldPassThrough($request);
+    }
 }
