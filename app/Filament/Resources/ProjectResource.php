@@ -19,7 +19,7 @@ class ProjectResource extends Resource
     protected static ?string $pluralModelLabel = 'المشاريع';
     protected static ?string $navigationLabel = 'المشاريع';
     protected static ?int $navigationSort = 7;
-    protected static ?string $navigationGroup = 'إدارة الوصول';
+    protected static ?string $navigationGroup = 'إدارة الموقع';
 
     public static function form(Form $form): Form
     {
