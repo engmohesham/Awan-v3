@@ -43,25 +43,10 @@ class ProjectController extends Controller
         $perPage = $request->get('per_page', 10);
         $projects = $query->paginate($perPage);
 
-        return ProjectResource::collection($projects)
-            ->additional([
-                'meta' => [
-                    'platform_types' => [
-                        ['key' => 'web', 'label' => 'موقع ويب'],
-                        ['key' => 'mobile', 'label' => 'تطبيق موبايل'],
-                        ['key' => 'graphic', 'label' => 'تصميم جرافيك'],
-                        ['key' => 'ai', 'label' => 'ذكاء اصطناعي'],
-                    ],
-                    'project_types' => [
-                        ['key' => 'entertainment', 'label' => 'ترفيهي'],
-                        ['key' => 'commercial', 'label' => 'تجاري'],
-                        ['key' => 'ecommerce', 'label' => 'متجر إلكتروني'],
-                        ['key' => 'educational', 'label' => 'تعليمي'],
-                        ['key' => 'social', 'label' => 'اجتماعي'],
-                        ['key' => 'other', 'label' => 'آخر'],
-                    ],
-                ],
-            ]);
+        return [
+            'projects' => ProjectResource::collection($projects->items()),
+            'total' => $projects->total(),
+        ];
     }
 
     public function show($slug)
@@ -70,7 +55,7 @@ class ProjectController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        return new ProjectResource($project);
+        return ['project' => new ProjectResource($project)];
     }
 
     public function latest()
@@ -80,7 +65,7 @@ class ProjectController extends Controller
             ->take(6)
             ->get();
 
-        return ProjectResource::collection($projects);
+        return ['projects' => ProjectResource::collection($projects)];
     }
 
     public function random()
@@ -90,6 +75,6 @@ class ProjectController extends Controller
             ->take(3)
             ->get();
 
-        return ProjectResource::collection($projects);
+        return ['projects' => ProjectResource::collection($projects)];
     }
 }
