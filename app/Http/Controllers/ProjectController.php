@@ -40,12 +40,15 @@ class ProjectController extends Controller
         $sortDirection = $request->get('sort_direction', 'desc');
         $query->orderBy($sortField, $sortDirection);
 
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page', 6);
         $projects = $query->paginate($perPage);
 
         return [
             'projects' => ProjectResource::collection($projects->items()),
             'total' => $projects->total(),
+            'per_page' => $projects->perPage(),
+            'current_page' => $projects->currentPage(),
+            'last_page' => $projects->lastPage(),
         ];
     }
 
