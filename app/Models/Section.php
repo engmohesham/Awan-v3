@@ -14,6 +14,7 @@ class Section extends Model
         'description',
         'slug',
         'is_active',
+        'icon',
     ];
 
     protected static function boot()

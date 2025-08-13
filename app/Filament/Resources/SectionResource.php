@@ -28,6 +28,13 @@ class SectionResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\FileUpload::make('icon')
+                    ->label('الأيقونة')
+                    ->image()
+                    ->imageEditor()
+                    ->directory('sections/icons')
+                    ->visibility('public')
+                    ->columnSpanFull(),
                 Forms\Components\TextInput::make('name')
                     ->label('اسم القسم')
                     ->required()
@@ -47,6 +54,10 @@ class SectionResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('icon')
+                    ->label('الأيقونة')
+                    ->circular()
+                    ->defaultImageUrl(url('/images/default-section.png')),
                 Tables\Columns\TextColumn::make('name')
                     ->label('اسم القسم')
                     ->searchable()
