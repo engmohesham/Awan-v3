@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\ProjectController;
 
 // API Routes
 // Test route to verify API is working
@@ -30,6 +31,15 @@ Route::get('/courses', [CourseController::class, 'index']);
 Route::get('/courses/{course}', [CourseController::class, 'show']);
 Route::get('/courses/{course}/lessons', [CourseController::class, 'lessons']);
 Route::get('/courses/{course}/free-lessons', [CourseController::class, 'freeLessons']);
+
+// Projects Routes
+Route::get('/projects', [ProjectController::class, 'index']);
+// GET /api/projects?platform_type=web&project_type=ecommerce&country=مصر&search=متجر&sort_by=published_at&sort_direction=desc&per_page=10
+Route::get('/projects/latest', [ProjectController::class, 'latest']);
+Route::get('/projects/random', [ProjectController::class, 'random']);
+Route::get('/projects/{slug}', [ProjectController::class, 'show']);
+// GET /api/projects/my-awesome-project
+
 
 // Protected Routes
 Route::middleware('auth:api')->group(function () {
