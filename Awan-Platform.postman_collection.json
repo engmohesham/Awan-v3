@@ -1,13 +1,13 @@
 {
 	"info": {
-		"_postman_id": "1234567-89ab-cdef-0123-456789abcdef",
+		"_postman_id": "awan-platform-api",
 		"name": "Awan Platform API",
-		"description": "API Collection for Awan Educational Platform",
+		"description": "API collection for Awan Educational Platform including authentication, courses, projects, orders and payments",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Auth",
+			"name": "Authentication",
 			"item": [
 				{
 					"name": "Login",
@@ -15,29 +15,13 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"admin@admin.com\",\n    \"password\": \"password\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/auth/login",
@@ -52,29 +36,13 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"name\": \"أحمد محمد\",\n    \"email\": \"ahmed@example.com\",\n    \"password\": \"password123\",\n    \"phone\": \"+201234567890\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/auth/register",
@@ -89,30 +57,31 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							},
-							{
 								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
+								"value": "Bearer {{token}}"
 							}
 						],
 						"url": {
 							"raw": "{{base_url}}/api/auth/logout",
 							"host": ["{{base_url}}"],
 							"path": ["api", "auth", "logout"]
+						}
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "refresh"]
 						}
 					}
 				}
@@ -125,18 +94,6 @@
 					"name": "Get All Sections",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							}
-						],
 						"url": {
 							"raw": "{{base_url}}/api/sections",
 							"host": ["{{base_url}}"],
@@ -145,32 +102,13 @@
 					}
 				},
 				{
-					"name": "Get Section Details",
+					"name": "Get Section by ID",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							}
-						],
 						"url": {
-							"raw": "{{base_url}}/api/sections/:section",
+							"raw": "{{base_url}}/api/sections/1",
 							"host": ["{{base_url}}"],
-							"path": ["api", "sections", ":section"],
-							"variable": [
-								{
-									"key": "section",
-									"value": "1",
-									"description": "Section ID"
-								}
-							]
+							"path": ["api", "sections", "1"]
 						}
 					}
 				},
@@ -178,29 +116,10 @@
 					"name": "Get Section Courses",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							}
-						],
 						"url": {
-							"raw": "{{base_url}}/api/sections/:section/courses",
+							"raw": "{{base_url}}/api/sections/1/courses",
 							"host": ["{{base_url}}"],
-							"path": ["api", "sections", ":section", "courses"],
-							"variable": [
-								{
-									"key": "section",
-									"value": "1",
-									"description": "Section ID"
-								}
-							]
+							"path": ["api", "sections", "1", "courses"]
 						}
 					}
 				}
@@ -213,18 +132,6 @@
 					"name": "Get All Courses",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							}
-						],
 						"url": {
 							"raw": "{{base_url}}/api/courses",
 							"host": ["{{base_url}}"],
@@ -233,32 +140,13 @@
 					}
 				},
 				{
-					"name": "Get Course Details",
+					"name": "Get Course by ID",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							}
-						],
 						"url": {
-							"raw": "{{base_url}}/api/courses/:course",
+							"raw": "{{base_url}}/api/courses/1",
 							"host": ["{{base_url}}"],
-							"path": ["api", "courses", ":course"],
-							"variable": [
-								{
-									"key": "course",
-									"value": "1",
-									"description": "Course ID"
-								}
-							]
+							"path": ["api", "courses", "1"]
 						}
 					}
 				},
@@ -266,29 +154,10 @@
 					"name": "Get Course Lessons",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							}
-						],
 						"url": {
-							"raw": "{{base_url}}/api/courses/:course/lessons",
+							"raw": "{{base_url}}/api/courses/1/lessons",
 							"host": ["{{base_url}}"],
-							"path": ["api", "courses", ":course", "lessons"],
-							"variable": [
-								{
-									"key": "course",
-									"value": "1",
-									"description": "Course ID"
-								}
-							]
+							"path": ["api", "courses", "1", "lessons"]
 						}
 					}
 				},
@@ -296,29 +165,10 @@
 					"name": "Get Course Free Lessons",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							}
-						],
 						"url": {
-							"raw": "{{base_url}}/api/courses/:course/free-lessons",
+							"raw": "{{base_url}}/api/courses/1/free-lessons",
 							"host": ["{{base_url}}"],
-							"path": ["api", "courses", ":course", "free-lessons"],
-							"variable": [
-								{
-									"key": "course",
-									"value": "1",
-									"description": "Course ID"
-								}
-							]
+							"path": ["api", "courses", "1", "free-lessons"]
 						}
 					}
 				}
@@ -328,42 +178,19 @@
 			"name": "Lessons",
 			"item": [
 				{
-					"name": "Get Lesson Details",
+					"name": "Get Lesson",
 					"request": {
 						"method": "GET",
 						"header": [
 							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							},
-							{
 								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
+								"value": "Bearer {{token}}"
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/courses/:course/lessons/:lesson",
+							"raw": "{{base_url}}/api/courses/1/lessons/1",
 							"host": ["{{base_url}}"],
-							"path": ["api", "courses", ":course", "lessons", ":lesson"],
-							"variable": [
-								{
-									"key": "course",
-									"value": "1",
-									"description": "Course ID"
-								},
-								{
-									"key": "lesson",
-									"value": "1",
-									"description": "Lesson ID"
-								}
-							]
+							"path": ["api", "courses", "1", "lessons", "1"]
 						}
 					}
 				},
@@ -373,71 +200,401 @@
 						"method": "GET",
 						"header": [
 							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Requested-With",
-								"value": "XMLHttpRequest",
-								"type": "text"
-							},
-							{
 								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
+								"value": "Bearer {{token}}"
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/courses/:course/lessons/:lesson/attachments",
+							"raw": "{{base_url}}/api/courses/1/lessons/1/attachments",
 							"host": ["{{base_url}}"],
-							"path": ["api", "courses", ":course", "lessons", ":lesson", "attachments"],
-							"variable": [
+							"path": ["api", "courses", "1", "lessons", "1", "attachments"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Projects",
+			"item": [
+				{
+					"name": "Get All Projects",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/projects?platform_type=web&project_type=ecommerce&country=مصر&search=متجر&sort_by=published_at&sort_direction=desc&per_page=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects"],
+							"query": [
 								{
-									"key": "course",
-									"value": "1",
-									"description": "Course ID"
+									"key": "platform_type",
+									"value": "web"
 								},
 								{
-									"key": "lesson",
-									"value": "1",
-									"description": "Lesson ID"
+									"key": "project_type",
+									"value": "ecommerce"
+								},
+								{
+									"key": "country",
+									"value": "مصر"
+								},
+								{
+									"key": "search",
+									"value": "متجر"
+								},
+								{
+									"key": "sort_by",
+									"value": "published_at"
+								},
+								{
+									"key": "sort_direction",
+									"value": "desc"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Latest Projects",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/projects/latest",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects", "latest"]
+						}
+					}
+				},
+				{
+					"name": "Get Random Projects",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/projects/random",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects", "random"]
+						}
+					}
+				},
+				{
+					"name": "Get Project by Slug",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/projects/my-awesome-project",
+							"host": ["{{base_url}}"],
+							"path": ["api", "projects", "my-awesome-project"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_id\": 1,\n    \"notes\": \"ملاحظات إضافية للطلب\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders"]
+						}
+					}
+				},
+				{
+					"name": "Get User Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/orders?status=pending&per_page=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders"],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Order Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/orders/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1"]
+						}
+					}
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/orders/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Create Payment - Card",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payment_method\": \"card\",\n    \"payment_gateway\": \"paytabs\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/payments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "payments"]
+						}
+					}
+				},
+				{
+					"name": "Create Payment - Vodafone Cash",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payment_method\": \"vodafone_cash\",\n    \"payment_gateway\": \"vodafone\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/payments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "payments"]
+						}
+					}
+				},
+				{
+					"name": "Create Payment - Bank Transfer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payment_method\": \"bank_transfer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/payments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "payments"]
+						}
+					}
+				},
+				{
+					"name": "Create Payment - Cash",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payment_method\": \"cash\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/payments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "payments"]
+						}
+					}
+				},
+				{
+					"name": "Upload Payment Proof",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "proof_image",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "sender_name",
+									"value": "أحمد محمد",
+									"type": "text"
+								},
+								{
+									"key": "sender_phone",
+									"value": "+201234567890",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/payment-proof",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "payment-proof"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Payment Callbacks",
+			"item": [
+				{
+					"name": "Payment Callback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gateway\": \"paytabs\",\n    \"tran_ref\": \"TST123456789\",\n    \"response_status\": \"A\",\n    \"cart_id\": \"ORD-20250115-ABC123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payment/callback",
+							"host": ["{{base_url}}"],
+							"path": ["api", "payment", "callback"]
+						}
+					}
+				},
+				{
+					"name": "Payment Cancel",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/payment/cancel?order_id=ORD-20250115-ABC123",
+							"host": ["{{base_url}}"],
+							"path": ["api", "payment", "cancel"],
+							"query": [
+								{
+									"key": "order_id",
+									"value": "ORD-20250115-ABC123"
 								}
 							]
 						}
 					}
 				}
 			]
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [""]
-			}
 		},
 		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [""]
-			}
+			"name": "Test",
+			"item": [
+				{
+					"name": "Test API",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/test",
+							"host": ["{{base_url}}"],
+							"path": ["api", "test"]
+						}
+					}
+				}
+			]
 		}
 	],
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "https://awan-v3.test",
-			"type": "string",
-			"description": "Base URL of the API"
+			"value": "http://localhost:8000",
+			"type": "string"
 		},
 		{
 			"key": "token",
-			"value": "your_access_token_here",
-			"type": "string",
-			"description": "Authentication token received after login"
+			"value": "your_jwt_token_here",
+			"type": "string"
 		}
 	]
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\OrderController;
 
 // API Routes
 // Test route to verify API is working
@@ -45,4 +46,17 @@ Route::get('/projects/{slug}', [ProjectController::class, 'show']);
 Route::middleware('auth:api')->group(function () {
     Route::get('/courses/{course}/lessons/{lesson}', [LessonController::class, 'show']);
     Route::get('/courses/{course}/lessons/{lesson}/attachments', [LessonController::class, 'attachments']);
+    
+    // Orders & Payments Routes
+    Route::post('/orders', [OrderController::class, 'createOrder']);
+    Route::get('/orders', [OrderController::class, 'userOrders']);
+    Route::get('/orders/{order}', [OrderController::class, 'showOrder']);
+    Route::delete('/orders/{order}', [OrderController::class, 'cancelOrder']);
+    
+    Route::post('/orders/{order}/payments', [OrderController::class, 'createPayment']);
+    Route::post('/orders/{order}/payment-proof', [OrderController::class, 'uploadPaymentProof']);
 });
+
+// Payment Callback Routes (Public)
+Route::post('/payment/callback', [OrderController::class, 'paymentCallback'])->name('payment.callback');
+Route::get('/payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');
