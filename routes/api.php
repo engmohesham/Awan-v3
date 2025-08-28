@@ -19,6 +19,7 @@ Route::get('/test', function () {
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::middleware('auth:api')->group(function () {
+    Route::get('/auth/profile', [AuthController::class, 'getProfile']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
 });
@@ -56,7 +57,3 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/orders/{order}/payments', [OrderController::class, 'createPayment']);
     Route::post('/orders/{order}/payment-proof', [OrderController::class, 'uploadPaymentProof']);
 });
-
-// Payment Callback Routes (Public)
-Route::post('/payment/callback', [OrderController::class, 'paymentCallback'])->name('payment.callback');
-Route::get('/payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');

@@ -69,6 +69,23 @@
 					}
 				},
 				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile"]
+						}
+					}
+				},
+				{
 					"name": "Refresh Token",
 					"request": {
 						"method": "POST",
@@ -387,31 +404,6 @@
 			"name": "Payments",
 			"item": [
 				{
-					"name": "Create Payment - Card",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"payment_method\": \"card\",\n    \"payment_gateway\": \"paytabs\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/orders/1/payments",
-							"host": ["{{base_url}}"],
-							"path": ["api", "orders", "1", "payments"]
-						}
-					}
-				},
-				{
 					"name": "Create Payment - Vodafone Cash",
 					"request": {
 						"method": "POST",
@@ -427,7 +419,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"payment_method\": \"vodafone_cash\",\n    \"payment_gateway\": \"vodafone\"\n}"
+							"raw": "{\n    \"payment_method\": \"vodafone_cash\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/orders/1/payments",
@@ -437,7 +429,7 @@
 					}
 				},
 				{
-					"name": "Create Payment - Bank Transfer",
+					"name": "Create Payment - Instapay",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -452,32 +444,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"payment_method\": \"bank_transfer\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/orders/1/payments",
-							"host": ["{{base_url}}"],
-							"path": ["api", "orders", "1", "payments"]
-						}
-					}
-				},
-				{
-					"name": "Create Payment - Cash",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"payment_method\": \"cash\"\n}"
+							"raw": "{\n    \"payment_method\": \"instapay\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/orders/1/payments",
@@ -525,49 +492,7 @@
 				}
 			]
 		},
-		{
-			"name": "Payment Callbacks",
-			"item": [
-				{
-					"name": "Payment Callback",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"gateway\": \"paytabs\",\n    \"tran_ref\": \"TST123456789\",\n    \"response_status\": \"A\",\n    \"cart_id\": \"ORD-20250115-ABC123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/payment/callback",
-							"host": ["{{base_url}}"],
-							"path": ["api", "payment", "callback"]
-						}
-					}
-				},
-				{
-					"name": "Payment Cancel",
-					"request": {
-						"method": "GET",
-						"url": {
-							"raw": "{{base_url}}/api/payment/cancel?order_id=ORD-20250115-ABC123",
-							"host": ["{{base_url}}"],
-							"path": ["api", "payment", "cancel"],
-							"query": [
-								{
-									"key": "order_id",
-									"value": "ORD-20250115-ABC123"
-								}
-							]
-						}
-					}
-				}
-			]
-		},
+
 		{
 			"name": "Test",
 			"item": [

@@ -134,4 +134,34 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function getProfile()
+    {
+        try {
+            $user = auth('api')->user();
+            
+            if (!$user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'المستخدم غير مسجل الدخول'
+                ], 401);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم جلب بيانات الملف الشخصي بنجاح',
+                'data' => [
+                    'user' => $user,
+                    'orders_count' => $user->orders()->count(),
+                    'payments_count' => $user->payments()->count(),
+                    'purchases_count' => $user->purchases()->count()
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'حدث خطأ أثناء جلب بيانات الملف الشخصي'
+            ], 500);
+        }
+    }
 }

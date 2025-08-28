@@ -16,18 +16,17 @@ class Payment extends Model
         'amount',
         'currency',
         'payment_method',
-        'payment_gateway',
-        'gateway_transaction_id',
-        'gateway_order_id',
-        'gateway_response',
         'status',
+        'proof_image',
+        'sender_phone',
+        'sender_name',
+        'notes',
         'paid_at',
         'failure_reason',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'gateway_response' => 'array',
         'paid_at' => 'datetime',
     ];
 
@@ -38,10 +37,8 @@ class Payment extends Model
     const STATUS_CANCELLED = 'cancelled';
 
     // Payment methods
-    const METHOD_CARD = 'card';
-    const METHOD_CASH = 'cash';
-    const METHOD_BANK_TRANSFER = 'bank_transfer';
     const METHOD_VODAFONE_CASH = 'vodafone_cash';
+    const METHOD_INSTAPAY = 'instapay';
 
     public function order(): BelongsTo
     {
