@@ -56,4 +56,7 @@ Route::middleware('auth:api')->group(function () {
     
     Route::post('/orders/{order}/payments', [OrderController::class, 'createPayment']);
     Route::post('/orders/{order}/payment-proof', [OrderController::class, 'uploadPaymentProof']);
+    
+    // Payment Methods Info
+    Route::get('/payment-methods', [OrderController::class, 'getPaymentMethods']);
 });

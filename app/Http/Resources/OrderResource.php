@@ -45,6 +45,21 @@ class OrderResource extends JsonResource
             'is_expired' => $this->isExpired(),
             'can_be_paid' => $this->canBePaid(),
             'time_remaining' => $this->expires_at ? now()->diffInSeconds($this->expires_at, false) : null,
+            
+            // Payment information
+            'payment_info' => [
+                'vodafone_cash' => [
+                    'name' => 'Vodafone Cash',
+                    'phone_number' => config('payment.methods.vodafone_cash.phone_number'),
+                    'description' => config('payment.methods.vodafone_cash.description'),
+                ],
+                'instapay' => [
+                    'name' => 'Instapay',
+                    'username' => config('payment.methods.instapay.username'),
+                    'description' => config('payment.methods.instapay.description'),
+                ]
+            ],
+            'payment_instructions' => 'يرجى اختيار طريقة الدفع وإرسال إثبات الدفع مع رقم الهاتف المرسل',
         ];
     }
 }

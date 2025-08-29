@@ -313,7 +313,7 @@
 			"name": "Orders",
 			"item": [
 				{
-					"name": "Create Order",
+					"name": "Create Order - Single Course",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -329,6 +329,31 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"course_id\": 1,\n    \"notes\": \"ملاحظات إضافية للطلب\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders"]
+						}
+					}
+				},
+				{
+					"name": "Create Order - Multiple Courses",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\n            \"course_id\": 1,\n            \"price\": 100\n        },\n        {\n            \"course_id\": 2,\n            \"price\": 150\n        }\n    ],\n    \"subtotal\": 250,\n    \"total\": 252,\n    \"transaction_fee\": 2,\n    \"payment_method\": \"instapay\",\n    \"user_info\": {\n        \"email\": \"user@example.com\",\n        \"first_name\": \"أحمد\",\n        \"last_name\": \"محمد\",\n        \"phone\": \"+201234567890\"\n    },\n    \"notes\": \"ملاحظات إضافية للطلب\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/orders",
@@ -487,6 +512,23 @@
 							"raw": "{{base_url}}/api/orders/1/payment-proof",
 							"host": ["{{base_url}}"],
 							"path": ["api", "orders", "1", "payment-proof"]
+						}
+					}
+				},
+				{
+					"name": "Get Payment Methods Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/payment-methods",
+							"host": ["{{base_url}}"],
+							"path": ["api", "payment-methods"]
 						}
 					}
 				}

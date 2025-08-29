@@ -23,57 +23,90 @@ class OrderController extends Controller
     {
         try {
             $request->validate([
-                'course_id' => 'required|exists:courses,id',
+                'items' => 'required|array|min:1',
+                'items.*.course_id' => 'required|exists:courses,id',
+                'items.*.price' => 'required|numeric|min:0',
+                'subtotal' => 'required|numeric|min:0',
+                'total' => 'required|numeric|min:0',
+                'transaction_fee' => 'required|numeric|min:0',
+                'payment_method' => 'required|in:vodafone_cash,instapay',
+                'user_info' => 'required|array',
+                'user_info.email' => 'required|email',
+                'user_info.first_name' => 'required|string|max:255',
+                'user_info.last_name' => 'required|string|max:255',
+                'user_info.phone' => 'required|string|max:20',
                 'notes' => 'nullable|string|max:500',
             ]);
 
-            $course = Course::findOrFail($request->course_id);
             $user = Auth::user();
+            $courses = [];
+            $totalAmount = 0;
+            $orderItems = [];
 
-            // التحقق من أن المستخدم لم يشتري الدورة من قبل
-            if ($user->orders()->where('course_id', $course->id)->where('status', Order::STATUS_CONFIRMED)->exists()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'لقد قمت بشراء هذه الدورة من قبل'
-                ], 400);
-            }
+            // التحقق من جميع الكورسات
+            foreach ($request->items as $item) {
+                $course = Course::findOrFail($item['course_id']);
+                $courses[] = $course;
+                $totalAmount += $item['price'];
+                $orderItems[] = [
+                    'course_id' => $course->id,
+                    'price' => $item['price']
+                ];
 
-            // التحقق من وجود طلب معلق
-            $pendingOrder = $user->orders()
-                ->where('course_id', $course->id)
-                ->where('status', Order::STATUS_PENDING)
-                ->where('payment_status', Order::PAYMENT_STATUS_PENDING)
-                ->first();
+                // التحقق من أن المستخدم لم يشتري الدورة من قبل
+                if ($user->orders()->where('course_id', $course->id)->where('status', Order::STATUS_CONFIRMED)->exists()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => "لقد قمت بشراء دورة '{$course->title}' من قبل"
+                    ], 400);
+                }
 
-            if ($pendingOrder) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'لديك طلب معلق بالفعل',
-                    'data' => new OrderResource($pendingOrder)
-                ]);
+                // التحقق من وجود طلب معلق
+                $pendingOrder = $user->orders()
+                    ->where('course_id', $course->id)
+                    ->where('status', Order::STATUS_PENDING)
+                    ->where('payment_status', Order::PAYMENT_STATUS_PENDING)
+                    ->first();
+
+                if ($pendingOrder) {
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => "لديك طلب معلق لدورة '{$course->title}' بالفعل",
+                        'data' => new OrderResource($pendingOrder)
+                    ]);
+                }
             }
 
             DB::beginTransaction();
 
-            // إنشاء الطلب
-            $order = Order::create([
-                'user_id' => $user->id,
-                'course_id' => $course->id,
-                'order_number' => Order::generateOrderNumber(),
-                'amount' => $course->price,
-                'currency' => 'EGP',
-                'status' => Order::STATUS_PENDING,
-                'payment_status' => Order::PAYMENT_STATUS_PENDING,
-                'notes' => $request->notes,
-                'expires_at' => now()->addHours(config('payment.order.expiration_hours', 24)),
-            ]);
+            $createdOrders = [];
+
+            // إنشاء order منفصل لكل كورس
+            foreach ($orderItems as $item) {
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'course_id' => $item['course_id'],
+                    'order_number' => Order::generateOrderNumber(),
+                    'amount' => $item['price'],
+                    'currency' => 'EGP',
+                    'status' => Order::STATUS_PENDING,
+                    'payment_status' => Order::PAYMENT_STATUS_PENDING,
+                    'notes' => $request->notes,
+                    'expires_at' => now()->addHours(config('payment.order.expiration_hours', 24)),
+                ]);
+
+                $createdOrders[] = $order;
+            }
 
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'تم إنشاء الطلب بنجاح',
-                'data' => new OrderResource($order)
+                'message' => count($createdOrders) > 1 ? 
+                    'تم إنشاء الطلبات بنجاح' : 'تم إنشاء الطلب بنجاح',
+                'data' => OrderResource::collection($createdOrders),
+                'total_amount' => $request->total,
+                'courses_count' => count($createdOrders)
             ], 201);
 
         } catch (ValidationException $e) {
@@ -258,6 +291,41 @@ class OrderController extends Controller
             'phone_number' => $config['phone_number'] ?? null,
             'username' => $config['username'] ?? null,
         ];
+    }
+
+    /**
+     * الحصول على معلومات طرق الدفع المتاحة
+     */
+    public function getPaymentMethods()
+    {
+        try {
+            $paymentMethods = [
+                'vodafone_cash' => [
+                    'name' => config('payment.methods.vodafone_cash.name'),
+                    'description' => config('payment.methods.vodafone_cash.description'),
+                    'phone_number' => config('payment.methods.vodafone_cash.phone_number'),
+                    'enabled' => config('payment.methods.vodafone_cash.enabled'),
+                ],
+                'instapay' => [
+                    'name' => config('payment.methods.instapay.name'),
+                    'description' => config('payment.methods.instapay.description'),
+                    'username' => config('payment.methods.instapay.username'),
+                    'enabled' => config('payment.methods.instapay.enabled'),
+                ]
+            ];
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم جلب معلومات طرق الدفع بنجاح',
+                'data' => $paymentMethods
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'حدث خطأ أثناء جلب معلومات طرق الدفع'
+            ], 500);
+        }
     }
 
     /**
