@@ -19,6 +19,12 @@ return new class extends Migration
             $table->enum('payment_status', ['pending', 'paid', 'failed', 'cancelled'])->default('pending');
             $table->text('notes')->nullable();
             $table->timestamp('expires_at')->nullable();
+            
+            // تفاصيل العميل
+            $table->string('customer_name')->nullable();
+            $table->string('customer_email')->nullable();
+            $table->string('customer_phone')->nullable();
+            
             $table->timestamps();
 
             $table->index(['user_id', 'status']);

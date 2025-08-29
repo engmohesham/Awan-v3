@@ -37,6 +37,13 @@ class OrderResource extends JsonResource
                 'email' => $this->user->email,
             ],
             
+            // Customer details from order
+            'customer' => [
+                'name' => $this->customer_name,
+                'email' => $this->customer_email,
+                'phone' => $this->customer_phone,
+            ],
+            
             // Payments
             'payments' => PaymentResource::collection($this->whenLoaded('payments')),
             'latest_payment' => new PaymentResource($this->whenLoaded('latestPayment')),

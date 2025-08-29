@@ -93,6 +93,10 @@ class OrderController extends Controller
                     'payment_status' => Order::PAYMENT_STATUS_PENDING,
                     'notes' => $request->notes,
                     'expires_at' => now()->addHours(config('payment.order.expiration_hours', 24)),
+                    // حفظ تفاصيل المستخدم من الـ request
+                    'customer_name' => $request->user_info['first_name'] . ' ' . $request->user_info['last_name'],
+                    'customer_email' => $request->user_info['email'],
+                    'customer_phone' => $request->user_info['phone'],
                 ]);
 
                 $createdOrders[] = $order;
@@ -245,6 +249,10 @@ class OrderController extends Controller
                 'currency' => $order->currency,
                 'payment_method' => $request->payment_method,
                 'status' => Payment::STATUS_PENDING,
+                // حفظ تفاصيل المستخدم من الـ order
+                'customer_name' => $order->customer_name,
+                'customer_email' => $order->customer_email,
+                'customer_phone' => $order->customer_phone,
             ]);
 
             // الحصول على معلومات الدفع
@@ -342,9 +350,14 @@ class OrderController extends Controller
 
             $user = Auth::user();
             $order = $user->orders()->findOrFail($orderId);
-            $payment = $order->payments()->latest()->first();
+            
+            // البحث عن أي payment معلق للـ user (ليس فقط للـ order)
+            $payment = Payment::where('user_id', $user->id)
+                ->where('status', Payment::STATUS_PENDING)
+                ->latest()
+                ->first();
 
-            if (!$payment || $payment->status !== Payment::STATUS_PENDING) {
+            if (!$payment) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'لا توجد عملية دفع معلقة'
@@ -362,6 +375,9 @@ class OrderController extends Controller
                 'proof_image' => $filePath,
                 'sender_name' => $request->sender_name,
                 'sender_phone' => $request->sender_phone,
+                // تحديث تفاصيل المرسل
+                'customer_name' => $request->sender_name,
+                'customer_phone' => $request->sender_phone,
             ]);
 
             return response()->json([

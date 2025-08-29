@@ -23,6 +23,9 @@ class Payment extends Model
         'notes',
         'paid_at',
         'failure_reason',
+        'customer_name',
+        'customer_email',
+        'customer_phone',
     ];
 
     protected $casts = [

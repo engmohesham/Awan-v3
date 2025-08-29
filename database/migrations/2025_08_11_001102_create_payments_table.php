@@ -22,6 +22,12 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->text('failure_reason')->nullable();
+            
+            // تفاصيل العميل
+            $table->string('customer_name')->nullable();
+            $table->string('customer_email')->nullable();
+            $table->string('customer_phone')->nullable();
+            
             $table->timestamps();
 
             $table->index(['order_id']);

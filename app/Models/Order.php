@@ -21,6 +21,9 @@ class Order extends Model
         'payment_status',
         'notes',
         'expires_at',
+        'customer_name',
+        'customer_email',
+        'customer_phone',
     ];
 
     protected $casts = [

@@ -19,6 +19,13 @@ class PaymentResource extends JsonResource
             'sender_name' => $this->sender_name,
             'sender_phone' => $this->sender_phone,
             'notes' => $this->notes,
+            
+            // Customer details
+            'customer' => [
+                'name' => $this->customer_name,
+                'email' => $this->customer_email,
+                'phone' => $this->customer_phone,
+            ],
             'paid_at' => $this->paid_at?->format('Y-m-d H:i:s'),
             'failure_reason' => $this->failure_reason,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
