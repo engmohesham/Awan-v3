@@ -29,11 +29,11 @@ class PaymentResource extends JsonResource
             'requires_proof' => true, // جميع طرق الدفع تحتاج إثبات
             
             // Order details
-            'order' => [
+            'order' => $this->when($this->relationLoaded('order'), [
                 'id' => $this->order->id,
                 'order_number' => $this->order->order_number,
                 'status' => $this->order->status,
-            ] when $this->relationLoaded('order'),
+            ]),
         ];
     }
 } 
