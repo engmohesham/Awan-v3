@@ -260,27 +260,6 @@ class OrderController extends Controller
         ];
     }
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'تم إنشاء عملية الدفع بنجاح',
-                'data' => new PaymentResource($payment)
-            ]);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'خطأ في البيانات المدخلة',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'حدث خطأ أثناء إنشاء عملية الدفع'
-            ], 500);
-        }
-    }
-
     /**
      * رفع إثبات الدفع
      */
