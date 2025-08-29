@@ -277,12 +277,7 @@ class OrderController extends Controller
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => 'حدث خطأ أثناء إنشاء عملية الدفع',
-                'debug' => [
-                    'error' => $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine()
-                ]
+                'message' => 'حدث خطأ أثناء إنشاء عملية الدفع'
             ], 500);
         }
     }
