@@ -371,8 +371,9 @@ class OrderController extends Controller
             $user = Auth::user();
             $order = $user->orders()->findOrFail($orderId);
             
-            // البحث عن أي payment معلق للـ user (ليس فقط للـ order)
-            $payment = Payment::where('user_id', $user->id)
+            // الحل النهائي: البحث عن payment معلق للـ order المحدد
+            $payment = Payment::where('order_id', $orderId)
+                ->where('user_id', $user->id)
                 ->where('status', Payment::STATUS_PENDING)
                 ->latest()
                 ->first();
@@ -380,6 +381,11 @@ class OrderController extends Controller
             // Debug: طباعة معلومات للبحث عن المشكلة
             $allPayments = Payment::where('user_id', $user->id)->get();
             $pendingPayments = Payment::where('user_id', $user->id)
+                ->where('status', Payment::STATUS_PENDING)
+                ->get();
+            
+            $orderPayments = Payment::where('order_id', $orderId)->get();
+            $pendingOrderPayments = Payment::where('order_id', $orderId)
                 ->where('status', Payment::STATUS_PENDING)
                 ->get();
 
@@ -392,10 +398,13 @@ class OrderController extends Controller
                         'order_id' => $orderId,
                         'all_payments_count' => $allPayments->count(),
                         'pending_payments_count' => $pendingPayments->count(),
+                        'order_payments_count' => $orderPayments->count(),
+                        'pending_order_payments_count' => $pendingOrderPayments->count(),
                         'all_payments' => $allPayments->map(function($p) {
                             return [
                                 'id' => $p->id,
                                 'order_id' => $p->order_id,
+                                'user_id' => $p->user_id,
                                 'status' => $p->status,
                                 'created_at' => $p->created_at
                             ];
@@ -404,6 +413,16 @@ class OrderController extends Controller
                             return [
                                 'id' => $p->id,
                                 'order_id' => $p->order_id,
+                                'user_id' => $p->user_id,
+                                'status' => $p->status,
+                                'created_at' => $p->created_at
+                            ];
+                        }),
+                        'order_payments' => $orderPayments->map(function($p) {
+                            return [
+                                'id' => $p->id,
+                                'order_id' => $p->order_id,
+                                'user_id' => $p->user_id,
                                 'status' => $p->status,
                                 'created_at' => $p->created_at
                             ];
