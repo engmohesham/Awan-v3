@@ -255,6 +255,10 @@ class OrderController extends Controller
                 'customer_phone' => $order->customer_phone,
             ]);
 
+            // Debug: التحقق من إنشاء الـ payment
+            $createdPayment = Payment::find($payment->id);
+            $allUserPayments = Payment::where('user_id', $user->id)->get();
+
             // الحصول على معلومات الدفع
             $paymentInfo = $this->getPaymentInfo($request->payment_method);
 
@@ -263,7 +267,23 @@ class OrderController extends Controller
                 'message' => 'تم إنشاء عملية الدفع، يرجى رفع إثبات الدفع',
                 'data' => new PaymentResource($payment),
                 'payment_info' => $paymentInfo,
-                'requires_proof' => true
+                'requires_proof' => true,
+                'debug' => [
+                    'payment_created_id' => $payment->id,
+                    'payment_found_id' => $createdPayment ? $createdPayment->id : null,
+                    'user_id' => $user->id,
+                    'order_id' => $order->id,
+                    'all_user_payments_count' => $allUserPayments->count(),
+                    'all_user_payments' => $allUserPayments->map(function($p) {
+                        return [
+                            'id' => $p->id,
+                            'order_id' => $p->order_id,
+                            'user_id' => $p->user_id,
+                            'status' => $p->status,
+                            'created_at' => $p->created_at
+                        ];
+                    })
+                ]
             ]);
 
         } catch (ValidationException $e) {
