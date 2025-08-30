@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\OrderResource\RelationManagers;
 
 class OrderResource extends Resource
 {
@@ -264,7 +265,7 @@ class OrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Resources\OrderResource\RelationManagers\PaymentsRelationManager::class,
+            RelationManagers\PaymentsRelationManager::class,
         ];
     }
 
