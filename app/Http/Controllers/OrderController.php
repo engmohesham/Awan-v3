@@ -397,6 +397,10 @@ class OrderController extends Controller
                     ->first();
             }
 
+            // Debug: طباعة معلومات إضافية
+            $allPaymentsInDB = \DB::table('payments')->where('user_id', $user->id)->get();
+            $pendingPaymentsInDB = \DB::table('payments')->where('user_id', $user->id)->where('status', 'pending')->get();
+
             if (!$payment) {
                 return response()->json([
                     'status' => 'error',
@@ -408,6 +412,8 @@ class OrderController extends Controller
                         'pending_payments_count' => $pendingPayments->count(),
                         'order_payments_count' => $orderPayments->count(),
                         'pending_order_payments_count' => $pendingOrderPayments->count(),
+                        'all_payments_in_db_count' => $allPaymentsInDB->count(),
+                        'pending_payments_in_db_count' => $pendingPaymentsInDB->count(),
                         'all_payments' => $allPayments->map(function($p) {
                             return [
                                 'id' => $p->id,
@@ -427,6 +433,15 @@ class OrderController extends Controller
                             ];
                         }),
                         'order_payments' => $orderPayments->map(function($p) {
+                            return [
+                                'id' => $p->id,
+                                'order_id' => $p->order_id,
+                                'user_id' => $p->user_id,
+                                'status' => $p->status,
+                                'created_at' => $p->created_at
+                            ];
+                        }),
+                        'all_payments_in_db' => $allPaymentsInDB->map(function($p) {
                             return [
                                 'id' => $p->id,
                                 'order_id' => $p->order_id,
