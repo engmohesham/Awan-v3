@@ -357,10 +357,38 @@ class OrderController extends Controller
                 ->latest()
                 ->first();
 
+            // Debug: طباعة معلومات للبحث عن المشكلة
+            $allPayments = Payment::where('user_id', $user->id)->get();
+            $pendingPayments = Payment::where('user_id', $user->id)
+                ->where('status', Payment::STATUS_PENDING)
+                ->get();
+
             if (!$payment) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'لا توجد عملية دفع معلقة'
+                    'message' => 'لا توجد عملية دفع معلقة',
+                    'debug' => [
+                        'user_id' => $user->id,
+                        'order_id' => $orderId,
+                        'all_payments_count' => $allPayments->count(),
+                        'pending_payments_count' => $pendingPayments->count(),
+                        'all_payments' => $allPayments->map(function($p) {
+                            return [
+                                'id' => $p->id,
+                                'order_id' => $p->order_id,
+                                'status' => $p->status,
+                                'created_at' => $p->created_at
+                            ];
+                        }),
+                        'pending_payments' => $pendingPayments->map(function($p) {
+                            return [
+                                'id' => $p->id,
+                                'order_id' => $p->order_id,
+                                'status' => $p->status,
+                                'created_at' => $p->created_at
+                            ];
+                        })
+                    ]
                 ], 400);
             }
 
