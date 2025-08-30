@@ -255,6 +255,9 @@ class OrderController extends Controller
                 'customer_phone' => $order->customer_phone,
             ]);
 
+            // الحل النهائي: commit فوري للـ transaction
+            DB::commit();
+
             // Debug: التحقق من إنشاء الـ payment
             $createdPayment = Payment::find($payment->id);
             $allUserPayments = Payment::where('user_id', $user->id)->get();
