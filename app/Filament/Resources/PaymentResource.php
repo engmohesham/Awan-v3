@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 
 class PaymentResource extends Resource
 {
@@ -27,78 +28,84 @@ class PaymentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('order_id')
-                    ->relationship('order', 'order_number')
-                    ->label('الطلب')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->label('المستخدم')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                
-                Forms\Components\TextInput::make('amount')
-                    ->label('المبلغ')
-                    ->required()
-                    ->numeric()
-                    ->prefix('$'),
-                
-                Forms\Components\TextInput::make('currency')
-                    ->label('العملة')
-                    ->default('EGP')
-                    ->required()
-                    ->maxLength(3),
-                
-                Forms\Components\Select::make('payment_method')
-                    ->label('طريقة الدفع')
-                    ->options([
-                        'vodafone_cash' => 'فودافون كاش',
-                        'instapay' => 'إنستا باي',
+                Forms\Components\Section::make('معلومات الدفعة الأساسية')
+                    ->schema([
+                        Forms\Components\Select::make('order_id')
+                            ->relationship('order', 'order_number')
+                            ->label('الطلب')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        
+                        Forms\Components\Select::make('user_id')
+                            ->relationship('user', 'name')
+                            ->label('المستخدم')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        
+                        Forms\Components\TextInput::make('amount')
+                            ->label('المبلغ')
+                            ->required()
+                            ->numeric()
+                            ->prefix('$'),
+                        
+                        Forms\Components\TextInput::make('currency')
+                            ->label('العملة')
+                            ->default('EGP')
+                            ->required()
+                            ->maxLength(3),
+                        
+                        Forms\Components\Select::make('payment_method')
+                            ->label('طريقة الدفع')
+                            ->options([
+                                'vodafone_cash' => 'فودافون كاش',
+                                'instapay' => 'إنستا باي',
+                            ])
+                            ->required(),
+                        
+                        Forms\Components\Select::make('status')
+                            ->label('حالة الدفع')
+                            ->options([
+                                'pending' => 'معلق',
+                                'paid' => 'مدفوع',
+                                'failed' => 'فشل',
+                                'cancelled' => 'ملغي',
+                            ])
+                            ->default('pending')
+                            ->required(),
                     ])
-                    ->required(),
-                
-                Forms\Components\Select::make('status')
-                    ->label('حالة الدفع')
-                    ->options([
-                        'pending' => 'معلق',
-                        'paid' => 'مدفوع',
-                        'failed' => 'فشل',
-                        'cancelled' => 'ملغي',
+                    ->columns(2),
+
+                Forms\Components\Section::make('إثبات الدفع والتفاصيل')
+                    ->schema([
+                        Forms\Components\FileUpload::make('proof_image')
+                            ->label('إثبات الدفع')
+                            ->image()
+                            ->imageEditor()
+                            ->directory('payment-proofs')
+                            ->visibility('public')
+                            ->helperText('يمكنك تحرير الصورة قبل الحفظ')
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/jpg'])
+                            ->maxSize(5120),
+                        
+                        Forms\Components\TextInput::make('sender_name')
+                            ->label('اسم المرسل')
+                            ->maxLength(255),
+                        
+                        Forms\Components\TextInput::make('sender_phone')
+                            ->label('هاتف المرسل')
+                            ->maxLength(20),
+                        
+                        Forms\Components\DateTimePicker::make('paid_at')
+                            ->label('تاريخ الدفع'),
+                        
+                        Forms\Components\TextInput::make('failure_reason')
+                            ->label('سبب الفشل')
+                            ->maxLength(500),
                     ])
-                    ->default('pending')
-                    ->required(),
-                
-                Forms\Components\FileUpload::make('proof_image')
-                    ->label('إثبات الدفع')
-                    ->image()
-                    ->directory('payment-proofs')
-                    ->visibility('public'),
-                
-                Forms\Components\TextInput::make('sender_name')
-                    ->label('اسم المرسل')
-                    ->maxLength(255),
-                
-                Forms\Components\TextInput::make('sender_phone')
-                    ->label('هاتف المرسل')
-                    ->maxLength(20),
-                
-                Forms\Components\Textarea::make('notes')
-                    ->label('ملاحظات')
-                    ->maxLength(1000)
-                    ->columnSpanFull(),
-                
-                Forms\Components\DateTimePicker::make('paid_at')
-                    ->label('تاريخ الدفع'),
-                
-                Forms\Components\TextInput::make('failure_reason')
-                    ->label('سبب الفشل')
-                    ->maxLength(500),
-                
-                // Customer details
+                    ->columns(2),
+
                 Forms\Components\Section::make('تفاصيل العميل')
                     ->schema([
                         Forms\Components\TextInput::make('customer_name')
@@ -115,6 +122,16 @@ class PaymentResource extends Resource
                             ->maxLength(20),
                     ])
                     ->columns(3),
+
+                Forms\Components\Section::make('ملاحظات إضافية')
+                    ->schema([
+                        Forms\Components\Textarea::make('notes')
+                            ->label('ملاحظات')
+                            ->placeholder('ملاحظات إضافية حول الدفعة')
+                            ->maxLength(1000)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1),
             ]);
     }
 
@@ -197,6 +214,70 @@ class PaymentResource extends Resource
                     ->label('عرض'),
                 Tables\Actions\EditAction::make()
                     ->label('تعديل'),
+                Tables\Actions\Action::make('approve_payment')
+                    ->label('موافقة على الدفع')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('تأكيد الموافقة على الدفع')
+                    ->modalDescription('هل أنت متأكد من الموافقة على هذا الدفع؟ سيتم تغيير حالة الطلب إلى مدفوع.')
+                    ->modalSubmitActionLabel('نعم، أوافق')
+                    ->modalCancelActionLabel('إلغاء')
+                    ->action(function (Payment $record) {
+                        $record->update([
+                            'status' => 'paid',
+                            'paid_at' => now(),
+                        ]);
+                        
+                        // تحديث حالة الطلب
+                        $record->order->update([
+                            'payment_status' => 'paid',
+                            'status' => 'paid',
+                        ]);
+                        
+                        \Filament\Notifications\Notification::make()
+                            ->title('تمت الموافقة على الدفع بنجاح')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (Payment $record) => $record->status === 'pending'),
+                
+                Tables\Actions\Action::make('reject_payment')
+                    ->label('رفض الدفع')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('تأكيد رفض الدفع')
+                    ->modalDescription('هل أنت متأكد من رفض هذا الدفع؟ سيتم تغيير حالة الدفع إلى فشل.')
+                    ->modalSubmitActionLabel('نعم، أرفض')
+                    ->modalCancelActionLabel('إلغاء')
+                    ->form([
+                        Forms\Components\Textarea::make('failure_reason')
+                            ->label('سبب الرفض')
+                            ->required()
+                            ->maxLength(500),
+                    ])
+                    ->action(function (Payment $record, array $data) {
+                        $record->update([
+                            'status' => 'failed',
+                            'failure_reason' => $data['failure_reason'],
+                        ]);
+                        
+                        \Filament\Notifications\Notification::make()
+                            ->title('تم رفض الدفع بنجاح')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (Payment $record) => $record->status === 'pending'),
+                
+                Tables\Actions\Action::make('view_proof')
+                    ->label('عرض إثبات الدفع')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->url(fn (Payment $record) => $record->proof_image ? Storage::url($record->proof_image) : '#')
+                    ->openUrlInNewTab()
+                    ->visible(fn (Payment $record) => $record->proof_image !== null),
+                
                 Tables\Actions\DeleteAction::make()
                     ->label('حذف'),
             ])
@@ -220,6 +301,7 @@ class PaymentResource extends Resource
         return [
             'index' => Pages\ListPayments::route('/'),
             'create' => Pages\CreatePayment::route('/create'),
+            'view' => Pages\ViewPayment::route('/{record}'),
             'edit' => Pages\EditPayment::route('/{record}/edit'),
         ];
     }
