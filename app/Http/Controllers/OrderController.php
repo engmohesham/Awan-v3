@@ -389,6 +389,14 @@ class OrderController extends Controller
                 ->where('status', Payment::STATUS_PENDING)
                 ->get();
 
+            // الحل النهائي: إذا لم يتم العثور على payment، ابحث عن أي payment معلق للـ user
+            if (!$payment) {
+                $payment = Payment::where('user_id', $user->id)
+                    ->where('status', Payment::STATUS_PENDING)
+                    ->latest()
+                    ->first();
+            }
+
             if (!$payment) {
                 return response()->json([
                     'status' => 'error',
